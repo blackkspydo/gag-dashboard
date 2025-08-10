@@ -1,6 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { z } from "zod"
-import { phoneAuthRateLimit } from "../../../../middlewares/phone-auth-rate-limit"
 
 const sendOtpSchema = z.object({
   phone_number: z.string().min(1, "Phone number is required")
@@ -10,7 +9,6 @@ export async function POST(
   req: MedusaRequest,
   res: MedusaResponse
 ) {
-  return phoneAuthRateLimit(req, res, async () => {
   try {
     const validatedData = sendOtpSchema.parse(req.body)
     
@@ -45,5 +43,4 @@ export async function POST(
       message: "Internal server error"
     })
   }
-  })
 }

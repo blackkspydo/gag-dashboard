@@ -38,6 +38,9 @@ importers:
       awilix:
         specifier: ^8.0.1
         version: 8.0.1
+      file-s3:
+        specifier: link:@medusajs/medusa/file-s3
+        version: link:@medusajs/medusa/file-s3
       pg:
         specifier: ^8.13.0
         version: 8.16.3

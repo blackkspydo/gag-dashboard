@@ -1,4 +1,4 @@
-import { MedusaService } from "@medusajs/framework/utils"
+import { MedusaService, Modules } from "@medusajs/framework/utils"
 import { PhoneVerification } from "./models"
 
 interface SendOtpInput {
@@ -19,6 +19,12 @@ interface OtpValidationResult {
 class PhoneAuthService extends MedusaService({
   PhoneVerification,
 }) {
+  private container_: any
+  
+  constructor(container: any) {
+    super(container)
+    this.container_ = container
+  }
   private generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString()
   }
@@ -91,17 +97,33 @@ class PhoneAuthService extends MedusaService({
     })
 
     try {
+      // Send SMS using notification service
+      const notificationService = this.container_.resolve(Modules.NOTIFICATION)
+      
+      const message = `Your OTP code is: ${otpCode}. This code will expire in 5 minutes. - GAG Nepal`
+      
+      await notificationService.createNotifications({
+        to: `+977${normalizedPhone}`,
+        channel: "sms",
+        template: "",
+        data: {
+          message: message
+        },
+        provider_id: "spydo-sms"
+      })
+
       return {
         success: true,
-        message: `Your OTP code is: ${otpCode}. This code will expire in 5 minutes.`,
+        message: "OTP sent successfully to your mobile number.",
         verification_id: verification.id
       }
     } catch (error) {
       await this.deletePhoneVerifications([verification.id])
       
+      console.error("SMS sending error:", error)
       return {
         success: false,
-        message: "Failed to send OTP. Please try again."
+        message: "Failed to send OTP SMS. Please try again."
       }
     }
   }
