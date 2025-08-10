@@ -34,6 +34,9 @@ module.exports = defineConfig({
           }
         ]
       }
+    },
+    {
+      resolve: "./src/modules/phone_auth"
     }
   ]
 })
